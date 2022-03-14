@@ -26,26 +26,46 @@ public class Main {
 
     abstract static class KeywordAnalyzer implements TextAnalyzer {
 
-        public final String keywords;
-        private final Label Label;
+        String [] keywords;
+        Label Label;
 
-        public KeywordAnalyzer(String keywords, Label Label) {
+        KeywordAnalyzer (String [] keywords, Label Label) {
             this.keywords = keywords;
             this.Label = Label;
         }
-        public String getKeywords() {
+        String[] getKeywords(){
             return keywords;
         }
-        public Label getLabel() {
+        Label getLabel(){
             return Label;
         }
 
     }
 
-    static class NegativeTextAnalyzer extends KeywordAnalyzer {
-        NegativeTextAnalyzer(String keywords, Main.Label Label) {
+    static class SpamAnalyzer extends KeywordAnalyzer {
+
+        SpamAnalyzer(String[] keywords, Main.Label Label) {
             super(keywords, Label);
         }
+
+        @Override
+        public Label processText(String text) {
+            for (int i = 0; i < keywords.length; i++) {
+                if (keywords[i].contains(text)) {
+                } else {
+                    return Main.Label.SPAM;
+                }
+            }
+            return Main.Label.OK;
+        }
+    }
+
+    static class NegativeTextAnalyzer extends KeywordAnalyzer {
+        NegativeTextAnalyzer(String[] keywords, Main.Label Label) {
+            super(keywords, Label);
+        }
+
+        @Override
         public Label processText(String text) {
             String negative1 = ":(";
             String negative2 = "=(";
@@ -55,31 +75,21 @@ public class Main {
             }else{
                 return Main.Label.OK;
             }
-        };
-    }
-
-    static class SpamAnalyzer extends KeywordAnalyzer {
-        SpamAnalyzer(String keywords, Main.Label Label) {
-            super(keywords, Label);
         }
-        public Label processText(String text) {
-            if (text.contains(keywords)) {
-                return Main.Label.SPAM;
-            }else{
-                return Main.Label.OK;
-            }
-        };
+
     }
 
     static class TooLongTextAnalyzer implements TextAnalyzer {
-        int maxLength;
+        TooLongTextAnalyzer() {
+            super(int maxLength);
+        }
         public Label processText(String text) {
             if (text.length() > maxLength) {
                 return Main.Label.TOO_LONG;
             }else{
                 return Main.Label.OK;
             }
-        };
+        }
     }
 
     enum Label {

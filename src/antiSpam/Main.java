@@ -6,9 +6,8 @@ public class Main {
     }
     public Label checkLabels(TextAnalyzer[] analyzers, String text) {
         for(int i=0; i < analyzers.length; i++) {
-            Label l = Label;
-            if (!(l.equals(Label.OK))){
-                return l;
+            if (!(this.analyzers.contais(Label.OK))){
+                return ;
             }
         }
         return Label.OK;

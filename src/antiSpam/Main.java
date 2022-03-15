@@ -4,10 +4,9 @@ public class Main {
 
     public static void main(String[] args) {
     }
-
     public Label checkLabels(TextAnalyzer[] analyzers, String text) {
         for(int i=0; i < analyzers.length; i++) {
-
+            Label l = Label;
             if (!(l.equals(Label.OK))){
                 return l;
             }
@@ -21,69 +20,57 @@ public class Main {
 
     abstract static class KeywordAnalyzer implements TextAnalyzer {
 
-        protected String [] keywords;
-        protected Label Label;
+        abstract String[] getKeywords();
+        abstract Label getLabel();
 
-        KeywordAnalyzer (String [] keywords, Label Label) {
-            this.keywords = keywords;
-            this.Label = Label;
-        }
-        KeywordAnalyzer () {
-        }
-
-        String[] getKeywords(){
-            return keywords;
-        }
-        Label getLabel(){
-            return Label;
-        }
-
-    }
-
-    static class SpamAnalyzer extends KeywordAnalyzer {
-
-        SpamAnalyzer(String[] keywords, Main.Label Label) {
-
-            super(keywords, Label);
-        }
-
-        @Override
-        public Label processText(String text) {
-            for (String keyword : keywords) {
-                if (keyword.contains(text)) {
-                } else {
-                    return Main.Label.SPAM;
+        public Label processText(String text){
+            for (String keyword : this.getKeywords()) {
+                if (!(keyword.contains(text))) {
+                    return this.getLabel();
                 }
             }
             return Main.Label.OK;
         }
     }
 
-    static class NegativeTextAnalyzer extends KeywordAnalyzer {
-        NegativeTextAnalyzer() {
+    static class SpamAnalyzer extends KeywordAnalyzer {
+        protected String [] keywords;
+        protected Label Label;
+        SpamAnalyzer (String [] keywords,Label Label) {
+            this.keywords = keywords;
+            this.Label = Label;
         }
+        @Override
+        public String[] getKeywords() {
+            return this.keywords;
+        }
+        @Override
+        public Main.Label getLabel() {
+            return Main.Label.SPAM;
+        }
+    }
+
+    static class NegativeTextAnalyzer extends KeywordAnalyzer {
+
+        String [] negative ={":(", "=(", ":|"};
 
         @Override
-        public Label processText(String text) {
-            String negative1 = ":(";
-            String negative2 = "=(";
-            String negative3 = ":|";
-            if ((text.contains(negative1)) || (text.contains(negative2)) || (text.contains(negative3))) {
-                return Main.Label.NEGATIVE_TEXT;
-            }else{
-                return Main.Label.OK;
-            }
+        public String[] getKeywords() {
+            return this.negative;
         }
-
+        @Override
+        public Main.Label getLabel() {
+            return Label.NEGATIVE_TEXT;
+        }
     }
 
     static class TooLongTextAnalyzer implements TextAnalyzer {
 
         private int maxLength;
+
         TooLongTextAnalyzer( int maxLength){
             this.maxLength = maxLength;
         }
-
         @Override
         public Label processText(String text) {
             if (text.length() > this.maxLength) {

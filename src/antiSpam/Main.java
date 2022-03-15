@@ -6,18 +6,13 @@ public class Main {
     }
 
     public Label checkLabels(TextAnalyzer[] analyzers, String text) {
-        TextAnalyzer result;
         for(int i=0; i < analyzers.length; i++) {
-            if(analyzers[i].equals(Label.OK)) {
-                if(i==analyzers.length-1){
-                    return Label.OK;
-                    break;
-                }
-            } else {
-                return analyzers[i];
-                break;
+
+            if (!(l.equals(Label.OK))){
+                return l;
             }
         }
+        return Label.OK;
     }
 
     interface TextAnalyzer {
@@ -26,13 +21,16 @@ public class Main {
 
     abstract static class KeywordAnalyzer implements TextAnalyzer {
 
-        String [] keywords;
-        Label Label;
+        protected String [] keywords;
+        protected Label Label;
 
         KeywordAnalyzer (String [] keywords, Label Label) {
             this.keywords = keywords;
             this.Label = Label;
         }
+        KeywordAnalyzer () {
+        }
+
         String[] getKeywords(){
             return keywords;
         }
@@ -45,13 +43,14 @@ public class Main {
     static class SpamAnalyzer extends KeywordAnalyzer {
 
         SpamAnalyzer(String[] keywords, Main.Label Label) {
+
             super(keywords, Label);
         }
 
         @Override
         public Label processText(String text) {
-            for (int i = 0; i < keywords.length; i++) {
-                if (keywords[i].contains(text)) {
+            for (String keyword : keywords) {
+                if (keyword.contains(text)) {
                 } else {
                     return Main.Label.SPAM;
                 }
@@ -61,8 +60,7 @@ public class Main {
     }
 
     static class NegativeTextAnalyzer extends KeywordAnalyzer {
-        NegativeTextAnalyzer(String[] keywords, Main.Label Label) {
-            super(keywords, Label);
+        NegativeTextAnalyzer() {
         }
 
         @Override
@@ -80,11 +78,15 @@ public class Main {
     }
 
     static class TooLongTextAnalyzer implements TextAnalyzer {
-        TooLongTextAnalyzer() {
-            super(int maxLength);
+
+        private int maxLength;
+        TooLongTextAnalyzer( int maxLength){
+            this.maxLength = maxLength;
         }
+
+        @Override
         public Label processText(String text) {
-            if (text.length() > maxLength) {
+            if (text.length() > this.maxLength) {
                 return Main.Label.TOO_LONG;
             }else{
                 return Main.Label.OK;

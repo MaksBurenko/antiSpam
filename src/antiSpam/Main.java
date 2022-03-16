@@ -7,7 +7,7 @@ public class Main {
     public Label checkLabels(TextAnalyzer[] analyzers, String text) {
 
         for(int i=0; i < analyzers.length; i++) {
-            Label label = processText.getLabel();
+            Label label = analyzers[i].processText(text);
                 if (label != (Label.OK)) {
                     return label;
                 }
@@ -21,8 +21,8 @@ public class Main {
 
     abstract static class KeywordAnalyzer implements TextAnalyzer {
 
-        abstract String[] getKeywords();
-        abstract Label getLabel();
+        abstract protected String[] getKeywords();
+        abstract protected Label getLabel();
 
         public Label processText(String text){
             for (String keyword : this.getKeywords()) {
@@ -35,11 +35,12 @@ public class Main {
     }
 
     static class SpamAnalyzer extends KeywordAnalyzer {
-        protected String [] keywords;
-        protected Label Label;
-        public SpamAnalyzer (String [] keywords,Label Label) {
+         private final String [] keywords;
+         Label Label;
+
+   public SpamAnalyzer (String [] keywords) {
             this.keywords = keywords;
-            this.Label = Label;
+            this.Label = Main.Label.SPAM;
         }
         @Override
         public String[] getKeywords() {
@@ -47,13 +48,19 @@ public class Main {
         }
         @Override
         public Main.Label getLabel() {
-            return Main.Label.SPAM;
+            return this.Label;
         }
     }
 
     static class NegativeTextAnalyzer extends KeywordAnalyzer {
 
         String [] negative ={":(", "=(", ":|"};
+        Label Label;
+
+        public NegativeTextAnalyzer (String [] negative) {
+            this.negative = negative;
+            this.Label = Main.Label.NEGATIVE_TEXT;
+        }
 
         @Override
         public String[] getKeywords() {
@@ -61,7 +68,7 @@ public class Main {
         }
         @Override
         public Main.Label getLabel() {
-            return Label.NEGATIVE_TEXT;
+            return this.Label;
         }
     }
 
@@ -70,14 +77,15 @@ public class Main {
         private int maxLength;
 
         public TooLongTextAnalyzer(int maxLength){
+
             this.maxLength = maxLength;
         }
         @Override
         public Label processText(String text) {
             if (text.length() > this.maxLength) {
-                return Main.Label.TOO_LONG;
+                return Label.TOO_LONG;
             }else{
-                return Main.Label.OK;
+                return Label.OK;
             }
         }
     }

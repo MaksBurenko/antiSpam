@@ -5,10 +5,12 @@ public class Main {
     public static void main(String[] args) {
     }
     public Label checkLabels(TextAnalyzer[] analyzers, String text) {
+
         for(int i=0; i < analyzers.length; i++) {
-            if (!(this.analyzers.contais(Label.OK))){
-                return ;
-            }
+            Label label = processText.getLabel();
+                if (label != (Label.OK)) {
+                    return label;
+                }
         }
         return Label.OK;
     }
@@ -35,7 +37,7 @@ public class Main {
     static class SpamAnalyzer extends KeywordAnalyzer {
         protected String [] keywords;
         protected Label Label;
-        SpamAnalyzer (String [] keywords,Label Label) {
+        public SpamAnalyzer (String [] keywords,Label Label) {
             this.keywords = keywords;
             this.Label = Label;
         }
@@ -67,7 +69,7 @@ public class Main {
 
         private int maxLength;
 
-        TooLongTextAnalyzer( int maxLength){
+        public TooLongTextAnalyzer(int maxLength){
             this.maxLength = maxLength;
         }
         @Override
